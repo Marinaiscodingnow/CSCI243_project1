@@ -39,8 +39,9 @@ void print_usage() {
     "percent Endline braces. Others want Newline.");
 }
 
+//Initializes the grid
 void initialize_grid(int dim, int vacant, int endline){
-    char grid[dim][dim];
+    static char grid[dim][dim];
     int total = dim * dim;
     int vacant_amount = (vacant/100) * total;
     int endline_amount = ((endline/100) * total) - vacant_amount;
@@ -76,6 +77,40 @@ void initialize_grid(int dim, int vacant, int endline){
         }
     }
 }
+
+//Find the current happiness
+//Found by finding the rato of all the neighbors who code like the agent
+//Compared to the total of non-vacant neighbors
+//If no neighbors, the agents happinness is 1.0
+float find_happiness(int row, int col){
+    
+}
+
+//Returns the average of all the current happiness measures
+float avg_happiness(float happy[]){
+    float total_happiness = 0.0;
+
+    return total_happiness;
+}
+
+//The agent must move to a vacant spot which is available at the beginning
+//Each agent can move up to one time per cycle as only agents unhappy will move
+//If there is no vacant spot for the agent, it will not move
+//If a vacant site was used by an earlier move, agent will not move again
+//this cycle.
+//If a location becomes available within the cycle, other agents can't use it
+//I'm going to move by the first vacant location
+void move(){
+
+}
+
+
+//Display the grid and info
+//This is only for print mode since infinite mode uses display.c
+void display(){
+
+}
+
 
 int main( int argc, char * argv[] ){
     while ( (opt = getopt( argc, argv, "ht:c:d:s:v:e:") ) != -1 ) {
@@ -168,9 +203,17 @@ int main( int argc, char * argv[] ){
 
             //Check for infinite mode
             if(count != -1){
-            
+                for(int i = 0; int < count; i++){
+                //Print the grid and info
+                diplay();
+                //Move the unhappy parties
+                move();
+                }
             }else{
+                //Infinite mode uses curor control within the display.c file
+                //Clears before each new cycle
                 usleep(micro_delay);        
+                
             }
 
         }
