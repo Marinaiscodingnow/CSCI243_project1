@@ -9,12 +9,12 @@
 
 int micro_delay = 900000;
 //Negative count means unset or infinite mode
-int count = -1;
-int dimension = 15;
-int strength = 50;
-int vacancy = 20;
-int percent_endline = 60;
-
+static int count = -1;
+static int dimension = 15;
+static int strength = 50;
+static int vacancy = 20;
+static int percent_endline = 60;
+static char grid[39][39];
 
 
 void print_usage() {
@@ -41,7 +41,6 @@ void print_usage() {
 
 //Initializes the grid
 void initialize_grid(int dim, int vacant, int endline){
-    static char grid[dim][dim];
     int total = dim * dim;
     int vacant_amount = (vacant/100) * total;
     int endline_amount = ((endline/100) * total) - vacant_amount;
@@ -82,15 +81,8 @@ void initialize_grid(int dim, int vacant, int endline){
 //Found by finding the rato of all the neighbors who code like the agent
 //Compared to the total of non-vacant neighbors
 //If no neighbors, the agents happinness is 1.0
-float find_happiness(int row, int col){
+float find_happiness(int row, int col, int strength){
     
-}
-
-//Returns the average of all the current happiness measures
-float avg_happiness(float happy[]){
-    float total_happiness = 0.0;
-
-    return total_happiness;
 }
 
 //The agent must move to a vacant spot which is available at the beginning
@@ -100,15 +92,41 @@ float avg_happiness(float happy[]){
 //this cycle.
 //If a location becomes available within the cycle, other agents can't use it
 //I'm going to move by the first vacant location
-void move(){
+int move(){
+    int moves = 0;
 
+    return moves;
 }
 
 
 //Display the grid and info
 //This is only for print mode since infinite mode uses display.c
-void display(){
-
+void display(int cycle, int strength){
+    int moves;
+    if(cycle != 0){
+        move();
+        moves = 0;
+    }
+    int total_agents = 0;
+    float avg_happiness = 0.0;
+    for(int i = 0; i < dimension; i++){
+        for(int j = 0; j < dimension; j++){
+            printf(grid[i][j]);
+            if(grid[i][j] != '.'){
+                avg_happiness += find_happiness(i,j,strength);
+                total_agents++;
+            }
+        }
+        printf("\n");
+    }
+    printf("cycle: %d \n", cycle);
+    printf("moves this cycle: %d \n", moves);
+    printf("teams' \"happiness\": %f\n", avg_happiness);
+    printf("dim: %d, "dimension);
+    printf("%%strength od preference: %d%%, ", strength);
+    printf("%%vacancy: %d%%, " vacancy);
+    printf("%%end: %d%% \n", percent_endline);
+    printf("Use Control-C to quit \n");
 }
 
 
@@ -203,11 +221,9 @@ int main( int argc, char * argv[] ){
 
             //Check for infinite mode
             if(count != -1){
-                for(int i = 0; int < count; i++){
-                //Print the grid and info
-                diplay();
-                //Move the unhappy parties
-                move();
+                for(int i = 1; int <=count; i++){
+                //Print the gird and info
+                display(i, strength);
                 }
             }else{
                 //Infinite mode uses curor control within the display.c file
