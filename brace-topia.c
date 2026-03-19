@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <unistd.h>
+#include "display.h"
 
 int micro_delay = 900000;
 //Negative count means unset or infinite mode
@@ -23,8 +24,8 @@ typedef struct {
 
 void print_usage() {
     fprintf(stderr, "usage:\n");
-    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] [-v %%vac] 
-    [-e %%end]\n");
+    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] [-v %%vac] " 
+    "[-e %%end]\n");
     fprintf(stderr, "%-12s%-10s%-10s%s\n", "Option", "Default", "Example", 
     "Description");
     fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-h'", "NA", "-h", 
@@ -65,14 +66,14 @@ void initialize_grid(int dim, int vacant, int endline){
     }
     //The Fisher-Yates Shuffle
     for(int i = total -1; i > 0; i--){
-        int j = rand % (i+1);
+        int j = rand() % (i+1);
         char tmp = flat[i];
         flat[i] = flat[j];
         flat[j] = tmp;
     }
 
     //Copy into the 2-D array created above
-    index = 0
+    index = 0;
     for(int r = 0; r < dim; r++){
         for(int c = 0; c < dim; c++){
             grid[r][c] = flat [index];
@@ -113,7 +114,7 @@ float find_happiness(int row, int col){
     if(total_neighbors == 0){
         happiness = 1.0;
     }else{
-        happiness = same_neighbors/total_happiness;
+        happiness = same_neighbors/total_neighbors;
     }
     return happiness;
 }
@@ -126,26 +127,30 @@ float find_happiness(int row, int col){
 //If a location becomes available within the cycle, other agents can't use it
 //I'm going to move by the first vacant location
 int move(){
+    int total = dimension * dimension;
     int moves = 0;
-    Pos vacant[MAX_CELLS];
+    Pos vacant[(int)(vacancy/100.0) * total];
     int vacant_count = 0;
 
     //Record all vacant cells at START of cycle
     for (int r = 0; r < dimension; r++) {
         for (int c = 0; c < dimension; c++) {
-            if (grid[r][c] == EMPTY) {
+            if (grid[r][c] == '.') {
                 vacant[vacant_count++] = (Pos){r, c};
             }
         }
     }
 
     //Track which vacancies are already used
-    int used[MAX_CELLS] = {0};
+    int used[dimension * dimension];
+    for(int i = 0; i < vacant_count; i++){
+        used[i] = 0;
+    }
 
     //Track which agents have already moved
     int moved[dimension][dimension];
-    for (int r = 0; r < rows; r++) {
-        for (int c = 0; c < cols; c++) {
+    for (int r = 0; r < dimension; r++) {
+        for (int c = 0; c < dimension; c++) {
             moved[r][c] = 0;
         }
     }
@@ -158,7 +163,7 @@ int move(){
             // Skip agents that already moved this cycle
             if (moved[r][c]) continue;
             // Only move unhappy agents
-            if (!(find_happiness(r,c) >= strength)){
+            if (find_happiness(r,c) < strength){
                 // Try to find a valid vacant location
                 for (int i = 0; i < vacant_count; i++) {
                     if (used[i]) continue;  // already taken
@@ -166,11 +171,12 @@ int move(){
                     int vc = vacant[i].c;
                     // Move agent
                     grid[vr][vc] = grid[r][c];
-                    grid[r][c] = EMPTY;
+                    grid[r][c] = '.';
                     moves++;
                     // Mark vacancy as used
                     used[i] = 1;
                     // Mark new position as already moved
+                    moved[r][c] = 1;
                     moved[vr][vc] = 1;
                     break;  // only one move per agent
                 }
@@ -194,7 +200,7 @@ void display(int cycle){
     float sum_happiness = 0.0;
     for(int i = 0; i < dimension; i++){
         for(int j = 0; j < dimension; j++){
-            printf(grid[i][j]);
+            printf("%c", grid[i][j]);
             if(grid[i][j] != '.'){
                 sum_happiness += find_happiness(i,j);
                 total_agents++;
@@ -207,92 +213,98 @@ void display(int cycle){
     printf("cycle: %d \n", cycle);
     printf("moves this cycle: %d \n", moves);
     printf("teams' \"happiness\": %f\n", avg_happiness);
-    printf("dim: %d, "dimension);
-    printf("%%strength od preference: %d%%, ", strength);
-    printf("%%vacancy: %d%%, " vacancy);
+    printf("dim: %d, ", dimension);
+    printf("%%strength of preference: %d%%, ", strength);
+    printf("%%vacancy: %d%%, ", vacancy);
     printf("%%end: %d%% \n", percent_endline);
     printf("Use Control-C to quit \n");
 }
 
 
 int main( int argc, char * argv[] ){
+    int opt;
     while ( (opt = getopt( argc, argv, "ht:c:d:s:v:e:") ) != -1 ) {
-        int opt;
         switch(opt){
             //Prints the help message
             case 'h':
                 print_usage();
                 return EXIT_SUCCESS;
             //Sets the cycle delay
-            case 't':
+            case 't':{
                 int tmp_t = (int)strtol(optarg, NULL, 10);
                 if(tmp_t > 0){
                     micro_delay = tmp_t;
                 }else{
-                    fprintf(stderr, "Delay (%d) must be a positive integer", tmp_t);
+                    fprintf(stderr, "Delay (%d) must be a positive integer\n", tmp_t);
                     print_usage();
                     return EXIT_FAILURE;
                 }
                 break;
+            }
             //Max count value
-            case 'c':
+            case 'c':{
                 int tmp_c = (int)strtol(optarg, NULL, 10);
                 if(tmp_c > 0){
                     count = tmp_c;
                 }else{
-                    fprintf(stderr, "Count (%d) must be a positive integer", tmp_c);
+                    fprintf(stderr, "Count (%d) must be a positive integer\n", tmp_c);
                     print_usage();
                     return EXIT_FAILURE;
                 }
                 break;
+            }
             //Sets the dimensions
-            case 'd':
+            case 'd':{
                 int tmp_d = (int)strtol(optarg, NULL, 10);
                 if(tmp_d >= 5 && tmp_d <= 39){
                     dimension = tmp_d;
                 }else{
-                    fprintf(stderr, "Dimension (%d) must be an integer [5..39]",
+                    fprintf(stderr, "Dimension (%d) must be an integer [5..39]\n",
                     tmp_d);
                     print_usage();
                     return EXIT_FAILURE;
                 }
                 break;
+            }
             //Sets the strength of preference
-            case 's':
+            case 's':{
                 int tmp_s = (int)strtol(optarg, NULL, 10);
                 if(tmp_s > 0){
                     strength = tmp_s;
                 }else{
-                    fprintf(stderr, "Strength (%d) must be a positive integer", 
+                    fprintf(stderr, "Strength (%d) must be a positive integer\n", 
                     tmp_s);
                     print_usage();
                     return EXIT_FAILURE;
                 }
                 break;
+            }
             //Sets the percent vacancies
-            case 'v':
+            case 'v':{
                 int tmp_v = (int)strtol(optarg, NULL, 10);
                 if(tmp_v > 0 && tmp_v < 100){
                     vacancy = tmp_v;
                 }else{
-                    fprintf(stderr, "Vacancy (%d) must be a value in [1...99]",
+                    fprintf(stderr, "Vacancy (%d) must be a value in [1...99]\n",
                     tmp_v);
                     print_usage();
                     return EXIT_FAILURE;
                 }
                 break;
+            }
             //Sets the percent of endline braces
-            case 'e':
+            case 'e':{
                 int tmp_e = (int)strtol(optarg, NULL, 10);
                 if(tmp_e > 0){
                     percent_endline = tmp_e;
                 }else{
-                    fprintf(stderr, "Endline Proportions (%d) must be a positive 
-                    integer", tmp_e);
+                    fprintf(stderr, "Endline Proportions (%d) must be a positive" 
+                    " integer\n", tmp_e);
                     print_usage();
                     return EXIT_FAILURE;
                 }
                 break;
+            }
             default:
             fprintf(stderr, "brace-topia: invalid option -- '%c'", opt);
             print_usage();
@@ -306,15 +318,48 @@ int main( int argc, char * argv[] ){
 
             //Check for infinite mode
             if(count != -1){
-                for(int i = 1; int <=count; i++){
+                for(int i = 1; i <=count; i++){
                 //Print the grid and info
                 display(i);
                 }
             }else{
                 //Infinite mode uses curor control within the display.c file
                 //Clears before each new cycle
-                usleep(micro_delay);        
-                
+                count = 0;
+                for(;;){
+                    int moves = 0;
+                    int sum_happiness = 0;
+                    int total_agents = 0;
+                    if(count != 0){
+                        moves = move();
+                    }
+                    clear(); 
+                    for(int r = 0; r <= dimension; r++){
+                        set_cur_pos(r+1,1);
+                        for(int c = 0; r <= dimension; c++){
+                            put(grid[r][c]);
+                            if(grid[r][c] != '.'){
+                                sum_happiness += find_happiness(r,c);
+                                total_agents++;
+                                }
+                        }
+                    }
+                    count++;
+                    //First status row
+                    int sr = dimension +1;
+                    set_cur_pos(sr, 1);
+                    float avg_happiness = sum_happiness/total_agents;
+                    printf("cycle: %d \n", count);
+                    printf("moves this cycle: %d \n", moves);
+                    printf("teams' \"happiness\": %f\n", avg_happiness);
+                    printf("dim: %d, ", dimension);
+                    printf("%%strength od preference: %d%%, ", strength);
+                    printf("%%vacancy: %d%%, ", vacancy);
+                    printf("%%end: %d%% \n", percent_endline);
+                    printf("Use Control-C to quit \n");
+                    //Sleep before restarting the cycle
+                    usleep(micro_delay);
+                }
             }
 
         }
