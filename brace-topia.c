@@ -16,6 +16,10 @@ static int vacancy = 20;
 static int percent_endline = 60;
 static char grid[39][39];
 
+typedef struct {
+    int r, c;
+} Pos;
+
 
 void print_usage() {
     fprintf(stderr, "usage:\n");
@@ -78,11 +82,40 @@ void initialize_grid(int dim, int vacant, int endline){
 }
 
 //Find the current happiness
-//Found by finding the rato of all the neighbors who code like the agent
+//Found by finding the ratio of all the neighbors who code like the agent
 //Compared to the total of non-vacant neighbors
 //If no neighbors, the agents happinness is 1.0
-float find_happiness(int row, int col, int strength){
-    
+float find_happiness(int row, int col){
+    int same_neighbors;
+    int total_neighbors;
+    float happiness;
+    //Directions!
+    int dr[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+    int dc[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+    //Find the non-vacant neighbors
+    for (int i = 0; i < 8; i++) {
+        int nr = row + dr[i];
+        int nc = col + dc[i];
+
+        // Boundary check
+        if (nr >= 0 && nr < dimension && nc >= 0 && nc < dimension) {
+            // Valid neighbor
+            if(grid[nr][nc] != '.'){
+                total_neighbors++;
+                if(grid[nr][nc] == grid[row][col]){
+                    same_neighbors++;
+                }
+            }
+        }
+    }
+
+    //Calculate happiness
+    if(total_neighbors == 0){
+        happiness = 1.0;
+    }else{
+        happiness = same_neighbors/total_happiness;
+    }
+    return happiness;
 }
 
 //The agent must move to a vacant spot which is available at the beginning
@@ -94,31 +127,83 @@ float find_happiness(int row, int col, int strength){
 //I'm going to move by the first vacant location
 int move(){
     int moves = 0;
+    Pos vacant[MAX_CELLS];
+    int vacant_count = 0;
 
+    //Record all vacant cells at START of cycle
+    for (int r = 0; r < dimension; r++) {
+        for (int c = 0; c < dimension; c++) {
+            if (grid[r][c] == EMPTY) {
+                vacant[vacant_count++] = (Pos){r, c};
+            }
+        }
+    }
+
+    //Track which vacancies are already used
+    int used[MAX_CELLS] = {0};
+
+    //Track which agents have already moved
+    int moved[dimension][dimension];
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            moved[r][c] = 0;
+        }
+    }
+
+    //Iterate through grid
+    for (int r = 0; r < dimension; r++) {
+        for (int c = 0; c < dimension; c++) {
+            // Skip empty cells
+            if (grid[r][c] == '.') continue;
+            // Skip agents that already moved this cycle
+            if (moved[r][c]) continue;
+            // Only move unhappy agents
+            if (!(find_happiness(r,c) >= strength)){
+                // Try to find a valid vacant location
+                for (int i = 0; i < vacant_count; i++) {
+                    if (used[i]) continue;  // already taken
+                    int vr = vacant[i].r;
+                    int vc = vacant[i].c;
+                    // Move agent
+                    grid[vr][vc] = grid[r][c];
+                    grid[r][c] = EMPTY;
+                    moves++;
+                    // Mark vacancy as used
+                    used[i] = 1;
+                    // Mark new position as already moved
+                    moved[vr][vc] = 1;
+                    break;  // only one move per agent
+                }
+            }
+        }
+    } 
     return moves;
 }
 
 
 //Display the grid and info
 //This is only for print mode since infinite mode uses display.c
-void display(int cycle, int strength){
-    int moves;
+void display(int cycle){
+    int moves = 0;
+    //Check if this is the first cycle
+    //If not, the grid changes!
     if(cycle != 0){
-        move();
-        moves = 0;
+        moves = move();
     }
     int total_agents = 0;
-    float avg_happiness = 0.0;
+    float sum_happiness = 0.0;
     for(int i = 0; i < dimension; i++){
         for(int j = 0; j < dimension; j++){
             printf(grid[i][j]);
             if(grid[i][j] != '.'){
-                avg_happiness += find_happiness(i,j,strength);
+                sum_happiness += find_happiness(i,j);
                 total_agents++;
             }
         }
         printf("\n");
     }
+    //Get the average happiness
+    float avg_happiness = sum_happiness/total_agents;
     printf("cycle: %d \n", cycle);
     printf("moves this cycle: %d \n", moves);
     printf("teams' \"happiness\": %f\n", avg_happiness);
@@ -187,10 +272,10 @@ int main( int argc, char * argv[] ){
             //Sets the percent vacancies
             case 'v':
                 int tmp_v = (int)strtol(optarg, NULL, 10);
-                if(tmp_v > 0){
+                if(tmp_v > 0 && tmp_v < 100){
                     vacancy = tmp_v;
                 }else{
-                    fprintf(stderr, "Vacancy (%d) must be a positive integer",
+                    fprintf(stderr, "Vacancy (%d) must be a value in [1...99]",
                     tmp_v);
                     print_usage();
                     return EXIT_FAILURE;
@@ -222,8 +307,8 @@ int main( int argc, char * argv[] ){
             //Check for infinite mode
             if(count != -1){
                 for(int i = 1; int <=count; i++){
-                //Print the gird and info
-                display(i, strength);
+                //Print the grid and info
+                display(i);
                 }
             }else{
                 //Infinite mode uses curor control within the display.c file
