@@ -24,8 +24,8 @@ typedef struct {
 
 void print_usage() {
     fprintf(stderr, "usage:\n");
-    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %str] [-v %vac] " 
-    "[-e %end]\n");
+    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] [-v %%vac] " 
+    "[-e %%end]\n");
     fprintf(stderr, "%-12s%-10s%-10s%s\n", "Option", "Default", "Example", 
     "Description");
     fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-h'", "NA", "-h", 
@@ -236,7 +236,9 @@ int main( int argc, char * argv[] ){
                     micro_delay = tmp_t;
                 }else{
                     fprintf(stderr, "Delay (%d) must be a positive integer\n", tmp_t);
-                    print_usage();
+                    fprintf(stderr, "usage:\n");
+                    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] "
+                    "[-v %%vac] [-e %%end]\n");
                     return EXIT_FAILURE;
                 }
                 break;
@@ -248,7 +250,9 @@ int main( int argc, char * argv[] ){
                     count = tmp_c;
                 }else{
                     fprintf(stderr, "Count (%d) must be a positive integer\n", tmp_c);
-                    print_usage();
+                    fprintf(stderr, "usage:\n");
+                    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] "
+                    "[-v %%vac] [-e %%end]\n");
                     return EXIT_FAILURE;
                 }
                 break;
@@ -261,7 +265,9 @@ int main( int argc, char * argv[] ){
                 }else{
                     fprintf(stderr, "Dimension (%d) must be an integer [5..39]\n",
                     tmp_d);
-                    print_usage();
+                    fprintf(stderr, "usage:\n");
+                    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] "
+                    "[-v %%vac] [-e %%end]\n");
                     return EXIT_FAILURE;
                 }
                 break;
@@ -274,7 +280,9 @@ int main( int argc, char * argv[] ){
                 }else{
                     fprintf(stderr, "Strength (%d) must be a positive integer\n", 
                     tmp_s);
-                    print_usage();
+                    fprintf(stderr, "usage:\n");
+                    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] "
+                    "[-v %%vac] [-e %%end]\n");
                     return EXIT_FAILURE;
                 }
                 break;
@@ -287,7 +295,9 @@ int main( int argc, char * argv[] ){
                 }else{
                     fprintf(stderr, "Vacancy (%d) must be a value in [1...99]\n",
                     tmp_v);
-                    print_usage();
+                    fprintf(stderr, "usage:\n");
+                    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] "
+                    "[-v %%vac] [-e %%end]\n");
                     return EXIT_FAILURE;
                 }
                 break;
@@ -300,15 +310,17 @@ int main( int argc, char * argv[] ){
                 }else{
                     fprintf(stderr, "Endline Proportions (%d) must be a positive" 
                     " integer\n", tmp_e);
-                    print_usage();
+                    fprintf(stderr, "usage:\n");
+                    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] "
+                    "[-v %%vac] [-e %%end]\n");
                     return EXIT_FAILURE;
                 }
                 break;
             }
             default:
             fprintf(stderr, "usage:\n");
-            fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %str] [-v %vac]" 
-            " [-e %end]\n");
+            fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] "
+            "[-v %%vac] [-e %%end]\n");
             return EXIT_FAILURE;
 
             //Randomize it
