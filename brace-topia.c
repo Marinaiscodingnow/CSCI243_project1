@@ -24,8 +24,8 @@ typedef struct {
 
 void print_usage() {
     fprintf(stderr, "usage:\n");
-    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] [-v %%vac] " 
-    "[-e %%end]\n");
+    fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %str] [-v %vac] " 
+    "[-e %end]\n");
     fprintf(stderr, "%-12s%-10s%-10s%s\n", "Option", "Default", "Example", 
     "Description");
     fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-h'", "NA", "-h", 
@@ -306,8 +306,9 @@ int main( int argc, char * argv[] ){
                 break;
             }
             default:
-            fprintf(stderr, "brace-topia: invalid option -- '%c'", opt);
-            print_usage();
+            fprintf(stderr, "usage:\n");
+            fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %str] [-v %vac]" 
+            " [-e %end]\n");
             return EXIT_FAILURE;
 
             //Randomize it
