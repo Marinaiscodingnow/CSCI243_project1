@@ -47,8 +47,8 @@ void print_usage() {
 //Initializes the grid
 void initialize_grid(int dim, int vacant, int endline){
     int total = dim * dim;
-    int vacant_amount = (int)((vacant/100) * total);
-    int endline_amount = (int)((endline/100) * total) - vacant_amount;
+    int vacant_amount = (int)((vacant/100.0) * total);
+    int endline_amount = (int)((endline/100.0) * total) - vacant_amount;
     int newline_amount = total - (endline_amount + vacant_amount);
     char flat[total];
     int index = 0;
@@ -176,7 +176,6 @@ int move(){
                     // Mark vacancy as used
                     used[i] = 1;
                     // Mark new position as already moved
-                    moved[r][c] = 1;
                     moved[vr][vc] = 1;
                     break;  // only one move per agent
                 }
@@ -342,13 +341,13 @@ int main( int argc, char * argv[] ){
                 count = 0;
                 for(;;){
                     int moves = 0;
-                    int sum_happiness = 0;
+                    float sum_happiness = 0.0;
                     int total_agents = 0;
                     if(count != 0){
                         moves = move();
                     }
                     clear(); 
-                    for(int r = 0; r <= dimension; r++){
+                    for(int r = 0; r < dimension; r++){
                         set_cur_pos(r+1,1);
                         for(int c = 0; c < dimension; c++){
                             put(grid[r][c]);
@@ -375,7 +374,7 @@ int main( int argc, char * argv[] ){
                     usleep(micro_delay);
                 }
             }
-        }
+        
 }
 
 
