@@ -28,27 +28,27 @@ void print_usage() {
     "[-e %%end]\n");
     fprintf(stderr, "%-12s%-10s%-10s%s\n", "Option", "Default", "Example", 
     "Description");
-    fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-h'", "NA", "-h", 
+    fprintf(stderr, "%-12s%-10s%-10s%s\n", "-h", "NA", "-h", 
     "print this usage message.");
-    fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-t N'", "900000", "-t 5000", 
+    fprintf(stderr, "%-12s%-10s%-10s%s\n", "-t N", "900000", "-t 5000", 
     "microseconds cycle delay.");
-    fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-c N'", "NA", "-c4", 
+    fprintf(stderr, "%-12s%-10s%-10s%s\n", "-c N", "NA", "-c4", 
     "count cycle maximum value.");
-    fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-d dim'", "15", "-d 7", 
+    fprintf(stderr, "%-12s%-10s%-10s%s\n", "-d dim", "15", "-d 7", 
     "width and height dimension.");
-    fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-s %%str'", "50", "-s 30", 
+    fprintf(stderr, "%-12s%-10s%-10s%s\n", "-s %%str", "50", "-s 30", 
     "strength of preference.");
-    fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-v %%vac'", "20", "-v30", 
+    fprintf(stderr, "%-12s%-10s%-10s%s\n", "-v %%vac", "20", "-v30", 
     "percent vacancies.");
-    fprintf(stderr, "%-12s%-10s%-10s%s\n", "'-e %%endl'", "60", "-e75", 
+    fprintf(stderr, "%-12s%-10s%-10s%s\n", "-e %%endl", "60", "-e75", 
     "percent Endline braces. Others want Newline.");
 }
 
 //Initializes the grid
 void initialize_grid(int dim, int vacant, int endline){
     int total = dim * dim;
-    int vacant_amount = (vacant/100) * total;
-    int endline_amount = ((endline/100) * total) - vacant_amount;
+    int vacant_amount = (int)((vacant/100) * total);
+    int endline_amount = (int)((endline/100) * total) - vacant_amount;
     int newline_amount = total - (endline_amount + vacant_amount);
     char flat[total];
     int index = 0;
@@ -87,9 +87,9 @@ void initialize_grid(int dim, int vacant, int endline){
 //Compared to the total of non-vacant neighbors
 //If no neighbors, the agents happinness is 1.0
 float find_happiness(int row, int col){
-    int same_neighbors;
-    int total_neighbors;
-    float happiness;
+    int same_neighbors = 0;
+    int total_neighbors = 0;
+    float happiness = 0.0;
     //Directions!
     int dr[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
     int dc[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
@@ -114,7 +114,7 @@ float find_happiness(int row, int col){
     if(total_neighbors == 0){
         happiness = 1.0;
     }else{
-        happiness = same_neighbors/total_neighbors;
+        happiness = (float)same_neighbors/total_neighbors;
     }
     return happiness;
 }
@@ -163,7 +163,7 @@ int move(){
             // Skip agents that already moved this cycle
             if (moved[r][c]) continue;
             // Only move unhappy agents
-            if (find_happiness(r,c) < strength){
+            if (find_happiness(r,c) < (float)strength/100.0){
                 // Try to find a valid vacant location
                 for (int i = 0; i < vacant_count; i++) {
                     if (used[i]) continue;  // already taken
@@ -322,7 +322,8 @@ int main( int argc, char * argv[] ){
             fprintf(stderr, "brace-topia [-h] [-t N] [-c N] [-d dim] [-s %%str] "
             "[-v %%vac] [-e %%end]\n");
             return EXIT_FAILURE;
-
+        }
+    }
             //Randomize it
             srandom(41);
 
@@ -331,7 +332,7 @@ int main( int argc, char * argv[] ){
 
             //Check for infinite mode
             if(count != -1){
-                for(int i = 1; i <=count; i++){
+                for(int i = 0; i <=count; i++){
                 //Print the grid and info
                 display(i);
                 }
@@ -349,7 +350,7 @@ int main( int argc, char * argv[] ){
                     clear(); 
                     for(int r = 0; r <= dimension; r++){
                         set_cur_pos(r+1,1);
-                        for(int c = 0; r <= dimension; c++){
+                        for(int c = 0; c < dimension; c++){
                             put(grid[r][c]);
                             if(grid[r][c] != '.'){
                                 sum_happiness += find_happiness(r,c);
@@ -374,9 +375,7 @@ int main( int argc, char * argv[] ){
                     usleep(micro_delay);
                 }
             }
-
         }
-    }
 }
 
 
