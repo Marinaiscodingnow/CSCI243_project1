@@ -1,0 +1,71 @@
+commit 16b4bcd631e878af0ca9ad408553c4a3039df6f5
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Fri Mar 20 20:27:19 2026 -0400
+
+    Completed the report!
+
+commit a42ccac52fd47cbee6d32257600e0a417115f63e
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Fri Mar 20 17:55:34 2026 -0400
+
+    Further fixes due to faulty brackets
+
+commit 3a50615de09bbce2b9ea01a12d1d729070a48b17
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Fri Mar 20 16:25:16 2026 -0400
+
+    Hopefully fixed major bugs preventing success
+
+commit a928488899835081b30ca6b967294104478c22a8
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Fri Mar 20 15:53:36 2026 -0400
+
+    Actually fixed the percentage sign problem within the error messages
+
+commit 08b9daaaee0b3c99cdf47b921672f905c4041656
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Fri Mar 20 15:32:50 2026 -0400
+
+    Fixed the help message and the default error output
+
+commit 37d9c8b69f91dd4418ba5ef21a9efe6516534bee
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Thu Mar 19 19:03:33 2026 -0400
+
+    Finished infinite mode along with obvious debugs. Ready for testing with gradescope.
+
+commit 16424fcc19471a3a855e169934c9346590dbaa07
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Wed Mar 18 23:11:21 2026 -0400
+
+    Completed the find_happiness function and the move function. All that is left is to complete the infinite mode and debug the code.
+
+commit 3957311de08dd8ed8ff48dd62cbb4e9309631935
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Tue Mar 17 19:23:32 2026 -0400
+
+    Added the display function, and the call for the print mode.
+
+commit 8c59cd631bb786fd6d27bf2f9d816dbecfd00c8f
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Tue Mar 17 15:15:18 2026 -0400
+
+    Added more comments and laid out plan for future functions
+
+commit 1f5757dbc505bfec918862c7b7ea9cb1f8779813
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Tue Mar 17 00:32:40 2026 -0400
+
+    Added the initialize grid function along with the stderr messages for the commands.
+
+commit ae5fc706e0f444afff533be5b06a38e3ef86d630
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Mon Mar 16 00:05:11 2026 -0400
+
+    Added brace-topia.c and created the print_usage() function, the optional command arguments, and checking to see if the parameters given are acceptable.
+
+commit 9716614f31fef47dead91d67e8df9395b6853bac
+Author: mmk9233 <marinakania4@gmail.com>
+Date:   Thu Mar 5 14:11:54 2026 -0500
+
+    Baseline commit before any changes made
